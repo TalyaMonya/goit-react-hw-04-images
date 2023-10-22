@@ -14,7 +14,6 @@ export const App = () => {
   const [textSearch, settextSearch] = useState('');
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -30,20 +29,15 @@ export const App = () => {
       const data = await API.getImages(textSearch, currentPage);
 
       if (data.hits.length === 0) {
-        return toast.error("Sorry, image not found...",
-          {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+        return toast.error("Sorry, image not found...");
       }
 
       const normolizedImages = API.normalizedImages(data.hits)
 
       setImages(prevImages => [...prevImages, ...normolizedImages]);
       setIsLoading(false);
-      setError('');
       setTotalPages(Math.ceil(data.totalHits / 12));
-    } catch (error) {
-      setError(true);
+    } catch(error) {
       toast.error("Something went wrong! Please reload the page!")
     } finally {
       setIsLoading(false);
