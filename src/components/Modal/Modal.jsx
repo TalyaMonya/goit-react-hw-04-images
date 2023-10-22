@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { ModalImg, ModalWindow, Overlay } from "./Modal.styled";
 
@@ -7,39 +7,32 @@ import { ModalImg, ModalWindow, Overlay } from "./Modal.styled";
 const modalRoot = document.querySelector('#modal-root');
 
 
-export class Modal extends Component {
-
-    // Метод життєвого циклу: визивається після монтування компоненту
-    componentDidMount() {
-        window.addEventListener('keydown', this.handleKeyDown);
+export const Modal = ({ largeImageURL, tags, onClose }) => {
+    useEffect(() => {
+        const handleKeyDown = e => {
+            if (e.code === 'Escape') {
+                onClose(); // Закриваємо модальне вікно при натисканні Escape
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyDown);
         document.body.style.overflow = 'hidden';
-    }
+    
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'visible';
+        };
+    }, [onClose]);
 
-    // Метод життєвого циклу: визивається перед розмонтуванням компоненту
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.handleKeyDown);
-        document.body.style.overflow = 'visible';
-    }
-
-    // Обробник подіі натискання клавіши
-    handleKeyDown = e => {
-        if (e.code === 'Escape') {
-            this.props.onClose(); // Закриваємо модальне вікно при натисканні Escape
+    // Обробник кліку по бекдропу
+    const handleBackdropClick = e => {
+        if (e.currentTarget === e.target) {
+            onClose();
         }
     };
 
-    // Обробник кліку по бекдропу
-    handleBackdropClick = e => {
-        if (e.currentTarget === e.target) {
-            this.props.onClose();
-        }
-    }
-
-    render() {
-        const { largeImageURL, tags } = this.props;
-
         return createPortal(
-            <Overlay onClick={this.handleBackdropClick}>
+            <Overlay onClick={handleBackdropClick}>
                 <ModalWindow>
                     <ModalImg src={largeImageURL} alt={tags}/>
                 </ModalWindow>
@@ -47,4 +40,3 @@ export class Modal extends Component {
             modalRoot
         )
     }
-}

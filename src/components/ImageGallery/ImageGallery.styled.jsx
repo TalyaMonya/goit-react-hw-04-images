@@ -13,5 +13,5 @@ export const ImageList = styled.ul`
 export const EmptyGallery = styled.p`
     padding-top: 150px;
     text-align: center;
-    font-size: 32px;
+    font-size: 26px;
 `
